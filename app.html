@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco Ecológico 🌿</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  font-family:"Poppins",sans-serif;
+  background:linear-gradient(135deg,#a8e063,#56ab2f);
+  min-height:100vh;
+  margin:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+/* CONTENEDORES */
+.container,.panel,.admin{
+  background:#fff;
+  border-radius:18px;
+  width:90%;
+  max-width:440px;
+  padding:30px;
+  text-align:center;
+  box-shadow:0 10px 25px rgba(0,0,0,.18);
+  display:none;
+  animation:.3s fadeIn ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+/* LOGO CENTRAL */
+.logo-center{text-align:center;margin-bottom:10px}
+.logo-center img{width:106px}
+/* TITULOS */
+h2{color:#56ab2f;margin-bottom:12px;font-size:1.8rem}
+/* INPUTS */
+input,textarea{width:100%;padding:12px;margin:6px 0;border-radius:12px;border:1px solid #ddd;font-size:1rem}
+input:focus,textarea:focus{outline:none;border-color:#56ab2f}
+/* BOTONES */
+button{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#56ab2f,#2f6d14);
+  color:#fff;border:none;font-weight:600;cursor:pointer;margin-top:5px
+}
+button:hover{box-shadow:0 4px 10px rgba(0,0,0,.2)}
+/* PANEL USUARIO */
+.kg-box{background:linear-gradient(135deg,#56ab2f,#1c4609);color:#fff;padding:18px;border-radius:14px;font-size:1.8rem;font-weight:700}
+.materiales{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:10px 0}
+.materiales div{background:#f5f5f5;border-radius:10px;padding:10px;font-weight:600}
+#infoUsuario p{background:#f9fff6;padding:8px;border:1px solid #e1efda;border-radius:10px}
+/* NOTIFICACIONES */
+#listaNotificaciones li{background:#f1ffe7;margin:5px 0;padding:8px;border-radius:8px;list-style:none}
+/* ADMIN */
+.admin{max-width:850px}
+/* TABLA */
+table{width:100%;border-collapse:collapse;margin-top:8px;font-size:.8rem}
+thead{background:#56ab2f;color:#fff}
+th,td{padding:6px;text-align:center}
+tbody tr:nth-child(even){background:#f4f4f4}
+tbody tr:hover{background:#eaf5e4}
+td input{width:55px;padding:4px;border-radius:7px;text-align:center}
+td button{width:auto;padding:6px 8px;border-radius:8px;font-size:.75rem}
+/* RESPONSIVE */
+@media(max-width:650px){.admin{padding:12px}th,td{font-size:.65rem}}
+</style>
+</head>
+
+<body>
+
+<!-- INICIO -->
+<div class="container" id="inicio" style="display:block">
+<div class="logo-center"><img src="https://ecobanco7.wordpress.com/wp-content/uploads/2025/11/left5053921867171298582.png"></div>
+<h2>Banco Ecológico 🌿</h2>
+<button onclick="mostrarRegistro()">Registrarse</button>
+<button onclick="mostrarLogin()">Iniciar sesión</button>
+</div>
+
+<!-- REGISTRO -->
+<div class="container" id="registro">
+<div class="logo-center"><img src="https://ecobanco7.wordpress.com/wp-content/uploads/2025/11/left5053921867171298582.png"></div>
+<h2>Registro</h2>
+<form id="formRegistro">
+<input id="nombre" placeholder="Nombre" required>
+<input id="grado" placeholder="Grado" required>
+<input id="email" type="email" placeholder="Email" required>
+<input id="password" type="password" placeholder="Contraseña" required>
+<button>Registrarse</button>
+</form>
+<button onclick="mostrarLogin()">¿Ya tienes cuenta?</button>
+</div>
+
+<!-- LOGIN -->
+<div class="container" id="login">
+<div class="logo-center"><img src="https://ecobanco7.wordpress.com/wp-content/uploads/2025/11/left5053921867171298582.png"></div>
+<h2>Login</h2>
+<input id="loginEmail" type="email" placeholder="Email" required>
+<input id="loginPassword" type="password" placeholder="Contraseña" required>
+<button onclick="iniciarSesion()">Entrar</button>
+<button onclick="mostrarRegistro()">Crear cuenta</button>
+</div>
+
+<!-- PANEL USUARIO -->
+<div class="panel" id="panelUsuario">
+<h2>“Ahorramos en verde, vivimos mejor.”</h2>
+<div id="totalKg" class="kg-box">0 kg</div>
+<div class="materiales">
+<div id="kgCarton">Cartón: 0 kg</div>
+<div id="kgPapel">Papel: 0 kg</div>
+<div id="kgMetal">Metal: 0 kg</div>
+<div id="kgBotellas">Botellas: 0 kg</div>
+</div>
+<div id="infoUsuario"></div>
+
+<h3>📩 Notificaciones</h3>
+<ul id="listaNotificaciones"></ul>
+
+<!-- SONIDO ACTUALIZADO -->
+<audio id="sonidoNotif" src="https://limewire.com/d/c1pDO#1iBNr9uRMx" preload="auto"></audio>
+
+<button onclick="cerrarSesion()">Cerrar sesión</button>
+</div>
+
+<!-- PANEL ADMIN -->
+<div class="admin" id="panelAdmin">
+<h2>Panel Admin 👑</h2>
+
+<h3>📢 Enviar notificación</h3>
+<textarea id="mensajeAdmin" placeholder="Escribe el aviso para todos los alumnos..."></textarea>
+<button onclick="enviarNotificacion()">Enviar Notificación</button>
+
+<input id="buscador" placeholder="🔍 Buscar por nombre, email o grado" oninput="filtrarTabla()">
+
+<table id="tablaUsuarios">
+<thead>
+<tr>
+<th>Nombre</th><th>Email</th><th>Grado</th>
+<th>Cartón</th><th>Papel</th><th>Metal</th>
+<th>Botellas</th><th>Acciones</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<button onclick="cerrarSesion()">Salir</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getFirestore,getDocs,getDoc,setDoc,deleteDoc,collection,doc,addDoc,query,orderBy,onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+import { getMessaging,getToken,onMessage } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging.js";
+
+/* FIREBASE */
+const firebaseConfig = { 
+ apiKey:"AIzaSyDREj0G-DWR3-fdCWUak3fYI5fErcgDyg",
+ authDomain:"bancoecologico-2e66f.firebaseapp.com",
+ projectId:"bancoecologico-2e66f",
+ storageBucket:"bancoecologico-2e66f.firebasestorage.app",
+ messagingSenderId:"339091724410",
+ appId:"1:339091724410:web:e56b46c90e0914996083c3"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const messaging = getMessaging(app);
+
+const ADMIN_EMAIL="admin@eco.com";
+const ADMIN_PASS="admin123";
+
+/* UI */
+window.mostrarRegistro=()=>{ocultarTodo();registro.style.display="block"}
+window.mostrarLogin=()=>{ocultarTodo();login.style.display="block"}
+window.cerrarSesion=()=>{ocultarTodo();inicio.style.display="block"}
+function ocultarTodo(){document.querySelectorAll(".container,.panel,.admin").forEach(e=>e.style.display="none")}
+
+/* REGISTRO */
+formRegistro.addEventListener("submit",async e=>{
+ e.preventDefault()
+ const user={nombre:nombre.value,grado:grado.value,email:email.value,password:password.value,carton:0,papel:0,metal:0,botellas:0}
+ await setDoc(doc(db,"usuarios",user.email),user)
+ mostrarPanelUsuario(user)
+})
+
+/* LOGIN */
+window.iniciarSesion=async()=>{
+ if(loginEmail.value===ADMIN_EMAIL && loginPassword.value===ADMIN_PASS){mostrarPanelAdmin();return}
+ const ref=doc(db,"usuarios",loginEmail.value)
+ const snap=await getDoc(ref)
+ if(!snap.exists()) return alert("No encontrado")
+ const u=snap.data()
+ if(u.password!==loginPassword.value) return alert("Contraseña incorrecta")
+ mostrarPanelUsuario(u)
+}
+
+/* PANEL USUARIO */
+function mostrarPanelUsuario(u){
+ ocultarTodo()
+ panelUsuario.style.display="block"
+ infoUsuario.innerHTML=`<p><b>${u.nombre}</b><br>${u.grado}<br>${u.email}</p>`
+ kgCarton.textContent=`Cartón: ${u.carton} kg`
+ kgPapel.textContent=`Papel: ${u.papel} kg`
+ kgMetal.textContent=`Metal: ${u.metal} kg`
+ kgBotellas.textContent=`Botellas: ${u.botellas} kg`
+ totalKg.textContent=`${u.carton+u.papel+u.metal+u.botellas} kg`
+ cargarNotificaciones()
+ pedirPermisoNotificaciones()
+}
+
+/* ADMIN PANEL */
+window.mostrarPanelAdmin=async()=>{
+ ocultarTodo()
+ panelAdmin.style.display="block"
+ const tbody=document.querySelector("#tablaUsuarios tbody")
+ tbody.innerHTML=""
+ const snap=await getDocs(collection(db,"usuarios"))
+ let i=0
+ snap.forEach(docu=>{
+  const u=docu.data()
+  tbody.innerHTML+=`<tr>
+  <td>${u.nombre}</td><td>${u.email}</td><td>${u.grado}</td>
+  <td><input id="c${i}" value="${u.carton}"></td>
+  <td><input id="p${i}" value="${u.papel}"></td>
+  <td><input id="m${i}" value="${u.metal}"></td>
+  <td><input id="b${i}" value="${u.botellas}"></td>
+  <td><button onclick="guardar('${u.email}',${i})">💾</button>
+  <button onclick="borrar('${u.email}')">🗑️</button></td></tr>`
+  i++
+ })
+}
+
+/* GUARDAR */
+window.guardar=async(email,i)=>{
+ await setDoc(doc(db,"usuarios",email),{
+  carton:+document.querySelector(`#c${i}`).value,
+  papel:+document.querySelector(`#p${i}`).value,
+  metal:+document.querySelector(`#m${i}`).value,
+  botellas:+document.querySelector(`#b${i}`).value
+ },{merge:true})
+ alert("Actualizado ✅")
+}
+
+/* BORRAR */
+window.borrar=async(email)=>{if(confirm("¿Eliminar usuario?")){await deleteDoc(doc(db,"usuarios",email));mostrarPanelAdmin()}}
+
+/* BUSCADOR */
+window.filtrarTabla=()=>{const texto=buscador.value.toLowerCase();document.querySelectorAll("#tablaUsuarios tbody tr").forEach(fila=>{fila.style.display=fila.innerText.toLowerCase().includes(texto)?"":"none"})}
+
+/* NOTIFICACIONES ADMIN */
+window.enviarNotificacion=async()=>{
+ const texto = mensajeAdmin.value.trim()
+ if(!texto) return alert("Escribe un mensaje")
+ const now = new Date()
+ await addDoc(collection(db,"notificaciones"),{mensaje:texto,fecha:now})
+ mensajeAdmin.value=""
+ alert("✅ Notificación enviada")
+}
+
+/* CARGAR NOTIFICACIONES ALUMNOS */
+function cargarNotificaciones(){
+ const sonido = document.getElementById("sonidoNotif")
+ const q=query(collection(db,"notificaciones"),orderBy("fecha","desc"))
+ onSnapshot(q,snap=>{
+  listaNotificaciones.innerHTML=""
+  snap.forEach(doc=>{
+   const n = doc.data()
+   const diff = (new Date() - n.fecha.toDate())/1000
+   if(diff<=60){
+    listaNotificaciones.innerHTML += `<li>🔔 ${n.mensaje}</li>`
+    sonido.play().catch(()=>{})
+    if(Notification.permission==="granted"){
+      new Notification("Banco Ecológico 🌿",{
+        body:n.mensaje,
+        icon:"https://ecobanco7.wordpress.com/wp-content/uploads/2025/11/left5053921867171298582.png"
+      })
+    }
+   }
+  })
+ })
+}
+
+/* PEDIR PERMISO NOTIFICACIONES */
+async function pedirPermisoNotificaciones(){if(Notification.permission!=="granted"){await Notification.requestPermission()}}
+
+/* TOKEN PARA PUSH */
+getToken(messaging,{vapidKey:"BJZ1JOMBkD6vbU4b5YNyDV08yzyzp7K42sREnZGs4H6z01-vpGduvS7IsukVTe7d0FMFD8SiGYOZhl_C8brihxs"})
+.then((currentToken)=>{if(currentToken){console.log("TOKEN:",currentToken)}else{console.log("No se obtuvo token")}})
+.catch((err)=>{console.log("Error token:",err)})
+
+/* MENSAJES EN PRIMER PLANO */
+onMessage(messaging,(payload)=>{
+ const sonido = document.getElementById("sonidoNotif")
+ console.log("Mensaje recibido en primer plano:",payload)
+ if(payload.notification){
+   new Notification(payload.notification.title,{
+     body:payload.notification.body,
+     icon:"https://ecobanco7.wordpress.com/wp-content/uploads/2025/11/left5053921867171298582.png"
+   })
+   sonido.play().catch(()=>{})
+ }
+})
+</script>
+</body>
+</html>
